@@ -1,71 +1,82 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import * as S from './scrollstyle';
 import axios from 'axios';
+import Asd from '../Komsco/Asd';
 
 const InfiniteScroll = () => {
 
-    const [users, setUsers] = useState([]);
+    const [data, setDatas] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
-    const [ fitem, setFitem ] = useState(0);
-    const [ item, setItem ] = useState(3)
+    const [ fatch , setFatch ] = useState(false);
+
+    const [ item, setItem ] = useState(0)
 
 
-    const fetchUsers = async () => {
+    const fetchDates = async () => {
+        setLoading(true);
             try {
-                // 요청이 시작 할 때에는 error 와 users 를 초기화하고
-                setError(null);
-                setUsers(null);
-                // loading 상태를 true 로 바꿉니다.
-                setLoading(true);
                 const response = await axios.get(
-                'https://jsonplaceholder.typicode.com/todos'
+                'http://newsapi.org/v2/everything?domains=wsj.com&apiKey=5634f5a486c449f281e035aa41fdeb91'
                 );
-                const cutUser = response.data.slice(fitem,item)
-                console.log(cutUser)
-                setUsers(users.concat(cutUser)); // 데이터는 response.data 안에 들어있습니다.
-                console.log(users)
+                const cutdata = response.data.articles.slice(item, item+3);
+                setDatas(cutdata);
             } catch (e) {
-                //setError(e);
+                console.log(e);
             }
-            setLoading(false);
-        };
+        setLoading(false);
+    };
 
-    const _infiniteScroll = useCallback(() => {
-        let scrollHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
-        let scrollTop = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
+    const infiniteScroll = useCallback(() => {
+        let scrollHeight = Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);
+        let scrollTop = Math.max(document.documentElement.scrollTop,document.body.scrollTop);
         let clientHeight = document.documentElement.clientHeight;
-        
-        if(scrollTop + clientHeight === scrollHeight) {
-            setFitem(item)
-            setItem(item + 3);
-        }
-    }, [item]);
     
-    const event = () => {
-        window.addEventListener('scroll', _infiniteScroll, true);
-    }
+        if (scrollTop + clientHeight === scrollHeight) {
+            fetchDatesMore();
+        }
+      });
         
     useEffect(() => {
-        fetchUsers()
-        event()
-    }, [_infiniteScroll]);
+        fetchDates()
+        
+        window.addEventListener('scroll', infiniteScroll, true);
+
+    }, []);
+
+    const fetchDatesMore = async () => {
+        setFatch(true);
+        
+        try {
+            const response = await axios.get(
+            'http://newsapi.org/v2/everything?domains=wsj.com&apiKey=5634f5a486c449f281e035aa41fdeb91'
+            );
+            const cutdata = response.data.articles.slice(item, item+3);
+            setDatas((datas) => datas.concat(cutdata));
+            
+        } catch (e) {
+            console.log(e)
+        }
+        setFatch(false);
+        setItem(item + 3);
+    };
 
     if (loading) return <div>로딩중..</div>;
-    if (error) return <div>에러가 발생했습니다</div>;
-    if (!users) return null;
+    if (!data) return null;
 
     return (
         <>
+            <div>
             {
-                users.map(user => (
+                data.map((news) => (
                     <>
-                    <S.background key={user.id}>
-                        <S.text>{user.title}</S.text>
-                    </S.background>
-                </>
-            ))}
+                        <S.background key={news.url}>
+                            <S.text>{news.title}</S.text>
+                        </S.background>
+                    </>
+                ))
+            }
+            </div>
         </>
     );
 }
