@@ -8,7 +8,7 @@ const AddNumber = (props) => {
             <div>
                 <h1>Add Number</h1>
                 <input type="button" value="+" onClick={function(){
-                    this.props.onClick(size);
+                    props.onClick(size);
                 }.bind(this)}></input>
                 <input type="text" value={size} onChange={function(e){
                     setSize(Number(e.target.value));
