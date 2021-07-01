@@ -38,37 +38,32 @@ const BeautifulDnd = () => {
         items.splice(result.destination.index, 0, reorderedItem);
     
         setData(items);
-
-        console.log(data[result.destination.index-1])
     };
 
     return (
         <>
             <DragDropContext onDragEnd={handleChange}>
-                <Droppable droppableId="testColumn" >
-                        {(provided, snapshot) => (
-                            <li className="testColumn" {...provided.droppableProps} ref={provided.innerRef}>
-                                <div style={{display: "flex"}}>
+                <Droppable droppableId="testColumn" direction="horizontal">
+                        
+                        {(provided) => (
+                            <div style={{display: 'flex'}} className="testColumn" {...provided.droppableProps} ref={provided.innerRef}>
                                 {data.map(({ id, title }, index) => (
-                                    <Draggable key={id} draggableId={id} index={index} >
-                                        {(provided) => (
-                                        <li
-                                            ref={provided.innerRef}
-                                            {...provided.dragHandleProps}
-                                            {...provided.draggableProps}
-                                        >
-                                            <DndCard title={title} id={id}/>
-                                        </li>
-                                        )}
+                                    <Draggable draggableId={id} index={index} key={id}>
+                                    {
+                                        (provided) => (
+                                            <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                                                <DndColumn title={title} id={id} index={index} dropProvided={provided}/>
+                                            </div>
+                                        )
+                                    }
                                     </Draggable>
-                                ))}
-                                </div>
+                                ))
+                                }
                             {provided.placeholder}
-                            </li>
+                            </div>
                         )}
-                    </Droppable>
+                </Droppable>
             </DragDropContext>
-
         </>
     )
 }
