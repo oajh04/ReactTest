@@ -6,3 +6,6 @@ export { default as Asd } from './Komsco/Asd';
 export { default as Enter} from './Enter/Enter';
 export { default as Scroll } from './Infinite-scroll/Infinitescroll';
 export { default as Array } from './arrypro/array';
+export { default as BeatifulDnd } from './BeautifulDnd/BeautifulDnd';
+export { default as BeatifulDndTwo } from './BeautifulDndTwo/BeautifulDnd';
+export { default as DndTet } from './DndTet';
